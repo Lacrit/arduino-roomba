@@ -1,0 +1,3 @@
+﻿END: shut down server
+HELLO: introduce yourself; saves sender's ip on server 
+BYE: removes ip entry on server 
