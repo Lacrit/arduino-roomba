@@ -1,26 +1,24 @@
-package client;
-
 import java.io.IOException;
 import java.net.*;
 
-public class Client {
+public class UDPClient {
     private DatagramSocket socket;
-    private InetAddress address;
-    private int port;
+    private InetAddress LOCAL_ADDR;
+    private int PORT;
     private byte[] buf;
-    private String brAddr;
+    private InetAddress BROADCAST_ADDR;
 
-    public Client(int port, String brAddr) throws SocketException, UnknownHostException {
-        this.brAddr = brAddr;
+    public UDPClient(int port, String brAddr) throws SocketException, UnknownHostException {
+        this.BROADCAST_ADDR = InetAddress.getByName(brAddr);
         socket = new DatagramSocket();
-        address = InetAddress.getByName("localhost");
-        this.port = port;
+        LOCAL_ADDR = InetAddress.getByName("localhost");
+        this.PORT = port;
     }
 
     public String sendEcho(String msg) throws IOException {
         buf = msg.getBytes();
         DatagramPacket packet
-                = new DatagramPacket(buf, buf.length, address, 4445);
+                = new DatagramPacket(buf, buf.length, LOCAL_ADDR, 4445);
         socket.send(packet);
         packet = new DatagramPacket(buf, buf.length);
         socket.receive(packet);
@@ -37,7 +35,7 @@ public class Client {
         buf = cmd.getBytes();
         try {
             DatagramPacket packet
-                    = new DatagramPacket(buf, buf.length, InetAddress.getByName(brAddr), port);
+                    = new DatagramPacket(buf, buf.length, BROADCAST_ADDR, PORT);
             socket.send(packet);
         } catch (UnknownHostException e) {
             e.printStackTrace();
