@@ -8,18 +8,20 @@ public class ServerLauncher {
 
         // write your code here
         boolean isControlServer = (Integer.parseInt(args[0]) == 1)? true: false;
-        int portNum = Integer.parseInt(args[1]);
-        String brAddr = args[2];
+        int receivePort = Integer.parseInt(args[1]);
+        int sendPort = Integer.parseInt(args[2]);
+        String brAddr = args[3];
+        String localAddr = args[4];
         // -------------------------------------------------------------------
         UDPServer server = null;
         //UDPClient client = null;
         try {
             //client = new UDPClient(portNum, brAddr);
             if (isControlServer) {
-                server = new ControlServer(portNum, brAddr);
+                server = new ControlServer(receivePort, brAddr, sendPort, localAddr);
             }
             else {
-                server = new SubordinateServer(portNum, brAddr);
+                server = new SubordinateServer(receivePort, brAddr, sendPort, localAddr);
             }
         } catch (SocketException e) {
             e.printStackTrace();

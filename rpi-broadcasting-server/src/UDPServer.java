@@ -4,22 +4,29 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-
+// Datagram packet: dest IP, dest port
 public abstract class UDPServer extends Thread {
 
     protected DatagramSocket socket;
     protected boolean running;
     protected byte[] buf = new byte[256];
 
-    protected int PORT;
-    protected InetAddress BROADCAST_ADDR;
-    protected Map<String, Consumer<DatagramPacket>> commands;
+    protected int RECEIVE_PORT;
+    protected int SEND_PORT;
+    protected String BROADCAST_ADDR;
+    protected String LOCALHOST_ADDR;
+    protected Map<String, Consumer<String>> commands;
 
 
-    public UDPServer(int port, String brAddr) throws SocketException, UnknownHostException {
-        socket = new DatagramSocket(port);
-        this.PORT = port;
-        this.BROADCAST_ADDR = InetAddress.getByName(brAddr);
+    public UDPServer(int receivePort, String brAddr, int sendPort, String localAddr) throws SocketException, UnknownHostException {
+        socket = new DatagramSocket(receivePort);
+        socket.setBroadcast(true);
+        this.RECEIVE_PORT = receivePort;
+        this.SEND_PORT = sendPort;
+//        this.BROADCAST_ADDR = InetAddress.getByName(brAddr);
+//        this.LOCALHOST_ADDR = InetAddress.getByName(localAddr);
+        this.BROADCAST_ADDR = brAddr;
+        this.LOCALHOST_ADDR = localAddr;
         commands = new HashMap<>();
 
     }
@@ -36,44 +43,42 @@ public abstract class UDPServer extends Thread {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            InetAddress address = packet.getAddress();
-            int port = packet.getPort();
 
-            //packet = new DatagramPacket(buf, buf.length, address, port);
             String received
                     = new String(packet.getData(), 0, packet.getLength());
-
-            if (received.equals("END")) {
+            System.out.println("Received new packet: " + received);
+            String protocolCommand = received.substring(0,3);
+            System.out.println("Protocol command: " + protocolCommand);
+            if (protocolCommand.equals("END")) {
                 running = false;
                 continue;
             } else {
-                if(commands.containsKey(received)){
-                    commands.get(received).accept(packet);
+                if(commands.containsKey(protocolCommand)){
+                    commands.get(protocolCommand).accept(received);
                 }
             }
-            // TODO: send ACK-like packet back
-//            try {
-//                socket.send(packet);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
         }
         System.out.println("Terminating server thread...");
         socket.close();
     }
 
     public void broadcastCommand(String cmd) {
-        buf = cmd.getBytes();
+        sendComand(cmd, BROADCAST_ADDR);
+    }
+
+    public void sendComand(String cmd, String destAddr){
+        String withIP = cmd.concat(LOCALHOST_ADDR.toString());
+        buf = withIP.getBytes();
+        System.out.println("Sending packet: " + withIP + "(" + withIP.getBytes().length+")" + " to " + destAddr);
         try {
             DatagramPacket packet
-                    = new DatagramPacket(buf, buf.length, BROADCAST_ADDR, PORT);
+                    = new DatagramPacket(buf, buf.length, InetAddress.getByName(destAddr), SEND_PORT);
             socket.send(packet);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
 
