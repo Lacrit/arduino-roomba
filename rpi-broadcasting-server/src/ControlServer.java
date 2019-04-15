@@ -26,6 +26,7 @@ public class ControlServer extends UDPServer {
                 CURR_DEVICE_ID += 1;
                 entries.put(IPaddr, new RemoteDevice(CURR_DEVICE_ID, IPaddr));
                 System.out.println("SYN: Added new device " + CURR_DEVICE_ID + " at " + IPaddr);
+                sendComand("ACK", IPaddr);
             } else {
                 RemoteDevice tmp = entries.get(IPaddr);
                 System.out.println("SYN: Device already exists by ID: " + tmp.getID() + " at " + tmp.getIPAddr());

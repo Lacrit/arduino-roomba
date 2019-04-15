@@ -8,11 +8,20 @@ import java.net.UnknownHostException;
 * serial interface where the communication with Roomba will be handled
 * */
 public class SubordinateServer extends UDPServer{
+
+    private String controlIP;
+    private boolean ack = false;
+
     public SubordinateServer(int receivePort, String brAddr, int sendPort, String localAddr) throws SocketException, UnknownHostException {
         super(receivePort, brAddr, sendPort, localAddr);
 
         commands.put("STR", p -> driveStraight(p)); // example
         commands.put("SYN", p ->shareAddress(p));
+        commands.put("ACK", p -> acknowledge(p));
+    }
+
+    private void acknowledge(String p) {
+        ack = true;
     }
 
     private void driveStraight(String p) {
@@ -24,7 +33,12 @@ public class SubordinateServer extends UDPServer{
             String destIP = p.substring(3);
             System.out.println("SYN: sharing my address with " + destIP);
             sendComand("SYN", destIP);
+            controlIP = destIP;
             //sendComand("SYN", BROADCAST_ADDR);
 
+    }
+
+    public boolean getACK() {
+        return ack;
     }
 }

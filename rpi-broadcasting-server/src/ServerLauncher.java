@@ -22,6 +22,12 @@ public class ServerLauncher {
             }
             else {
                 server = new SubordinateServer(receivePort, brAddr, sendPort, localAddr);
+                SubordinateServer sub = (SubordinateServer) server;
+
+                while (server != null) {
+                    server.broadcastCommand("SYN");
+                    if (sub.getACK()) break;
+                }
             }
         } catch (SocketException e) {
             e.printStackTrace();
