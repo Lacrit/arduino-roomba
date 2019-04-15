@@ -1,7 +1,0 @@
-﻿To Control Server:
-END: shut down server
-SYNXXX.XXX.XXX.XXX: answer to SYN... ; put your local IPv4 address in the packet
-DELXXX.XXX.XXX.XXX: removes ip entry after DEL from control server
-
-From Control Server:
-SYNXXX.XXX.XXX.XXX: must contain sender's local IP address, produces a SYN... response
