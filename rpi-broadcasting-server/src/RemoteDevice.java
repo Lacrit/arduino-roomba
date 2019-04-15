@@ -5,15 +5,13 @@ import java.util.Objects;
 public class RemoteDevice {
 
     private final int ID;
-    private InetAddress IPAddr;
+    private String IPAddr;
 
     public RemoteDevice(int id, String IPAddr) {
         ID = id;
-        try {
-            this.IPAddr = InetAddress.getByName(IPAddr);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
+        //this.IPAddr = InetAddress.getByName(IPAddr);
+        this.IPAddr = IPAddr;
+
     }
 
     @Override
@@ -42,7 +40,7 @@ public class RemoteDevice {
         return ID;
     }
 
-    public InetAddress getIPAddr() {
+    public String getIPAddr() {
         return IPAddr;
     }
 }
