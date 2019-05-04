@@ -7,7 +7,8 @@ public class ServerLauncher {
     public static void main(String[] args) {
 
         // write your code here
-        boolean isControlServer = (Integer.parseInt(args[0]) == 1)? true: false;
+        int type = Integer.parseInt(args[0]);
+        boolean isControlServer = (type== 1)? true: false;
         int receivePort = Integer.parseInt(args[1]);
         int sendPort = Integer.parseInt(args[2]);
         String brAddr = args[3];
@@ -18,15 +19,15 @@ public class ServerLauncher {
         try {
             //client = new UDPClient(portNum, brAddr);
             if (isControlServer) {
-                server = new ControlServer(receivePort, brAddr, sendPort, localAddr);
+                server = new ControlServer(type, receivePort, brAddr, sendPort, localAddr);
             }
             else {
-                server = new SubordinateServer(receivePort, brAddr, sendPort, localAddr);
+                server = new SubordinateServer(type, receivePort, brAddr, sendPort, localAddr);
                 SubordinateServer sub = (SubordinateServer) server;
 
                 while (server != null) {
                     server.broadcastCommand("SYN");
-                    if (sub.getACK()) break;
+                    if (sub.isConnected()) break;
                 }
             }
         } catch (SocketException e) {
@@ -51,6 +52,8 @@ public class ServerLauncher {
                 }
             } while (in.hasNext());
             in.close();
+        } else {
+
         }
     }
 }

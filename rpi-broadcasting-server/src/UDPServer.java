@@ -10,6 +10,7 @@ public abstract class UDPServer extends Thread {
     protected DatagramSocket socket;
     protected boolean running;
     protected byte[] buf = new byte[256];
+    protected Integer type;
 
     protected int RECEIVE_PORT;
     protected int SEND_PORT;
@@ -18,7 +19,7 @@ public abstract class UDPServer extends Thread {
     protected Map<String, Consumer<String>> commands;
 
 
-    public UDPServer(int receivePort, String brAddr, int sendPort, String localAddr) throws SocketException, UnknownHostException {
+    public UDPServer(int type, int receivePort, String brAddr, int sendPort, String localAddr) throws SocketException, UnknownHostException {
         socket = new DatagramSocket(receivePort);
         socket.setBroadcast(true);
         this.RECEIVE_PORT = receivePort;
@@ -27,6 +28,7 @@ public abstract class UDPServer extends Thread {
 //        this.LOCALHOST_ADDR = InetAddress.getByName(localAddr);
         this.BROADCAST_ADDR = brAddr;
         this.LOCALHOST_ADDR = localAddr;
+        this.type = type;
         commands = new HashMap<>();
 
     }
@@ -67,9 +69,10 @@ public abstract class UDPServer extends Thread {
     }
 
     public void sendComand(String cmd, String destAddr){
-        String withIP = cmd.concat(LOCALHOST_ADDR.toString());
-        buf = withIP.getBytes();
-        System.out.println("Sending packet: " + withIP + "(" + withIP.getBytes().length+")" + " to " + destAddr);
+        String type = cmd.concat(this.type.toString());
+        String typeIPcommand = type.concat(LOCALHOST_ADDR);
+        buf = typeIPcommand.getBytes();
+        System.out.println("Sending packet: " + typeIPcommand + "(" + typeIPcommand.getBytes().length+")" + " to " + destAddr);
         try {
             DatagramPacket packet
                     = new DatagramPacket(buf, buf.length, InetAddress.getByName(destAddr), SEND_PORT);

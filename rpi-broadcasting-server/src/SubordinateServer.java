@@ -1,5 +1,3 @@
-import java.net.DatagramPacket;
-import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 /*
@@ -10,10 +8,11 @@ import java.net.UnknownHostException;
 public class SubordinateServer extends UDPServer{
 
     private String controlIP;
-    private boolean ack = false;
+    private boolean connected = false;
+    private RemoteDevice control;
 
-    public SubordinateServer(int receivePort, String brAddr, int sendPort, String localAddr) throws SocketException, UnknownHostException {
-        super(receivePort, brAddr, sendPort, localAddr);
+    public SubordinateServer(int type, int receivePort, String brAddr, int sendPort, String localAddr) throws SocketException, UnknownHostException {
+        super(type, receivePort, brAddr, sendPort, localAddr);
 
         commands.put("STR", p -> driveStraight(p)); // example
         commands.put("SYN", p ->shareAddress(p));
@@ -21,7 +20,7 @@ public class SubordinateServer extends UDPServer{
     }
 
     private void acknowledge(String p) {
-        ack = true;
+        connected = true;
     }
 
     private void driveStraight(String p) {
@@ -38,7 +37,7 @@ public class SubordinateServer extends UDPServer{
 
     }
 
-    public boolean getACK() {
-        return ack;
+    public boolean isConnected() {
+        return connected;
     }
 }

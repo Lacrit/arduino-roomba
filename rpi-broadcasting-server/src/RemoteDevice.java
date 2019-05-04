@@ -6,11 +6,18 @@ public class RemoteDevice {
 
     private final int ID;
     private String IPAddr;
+    private Integer type;
 
-    public RemoteDevice(int id, String IPAddr) {
+    private static int ALL_TYPES = 0;
+    private static int CONTROL = 1;
+    private static int CAMERA = 2;
+    private static int NO_CAMERA = 3;
+
+    public RemoteDevice(int id, String IPAddr, int type) {
         ID = id;
         //this.IPAddr = InetAddress.getByName(IPAddr);
         this.IPAddr = IPAddr;
+        this.type = type;
 
     }
 
