@@ -6,29 +6,30 @@ public class ServerLauncher {
 
     public static void main(String[] args) {
 
-        // write your code here
-        int type = Integer.parseInt(args[0]);
-        boolean isControlServer = (type== 1)? true: false;
-        int receivePort = Integer.parseInt(args[1]);
-        int sendPort = Integer.parseInt(args[2]);
-        String brAddr = args[3];
-        String localAddr = args[4];
+        // Arguments
+        int argType = Integer.parseInt(args[0]);
+        boolean argIsControlServer = (argType == 1)? true: false;
+        int argReceivePort = Integer.parseInt(args[1]);
+        int argSendPort = Integer.parseInt(args[2]);
+        String argBrAddr = args[3];
+        String argLocalAddr = args[4];
         // -------------------------------------------------------------------
         UDPServer server = null;
-        //UDPClient client = null;
+
         try {
-            //client = new UDPClient(portNum, brAddr);
-            if (isControlServer) {
-                server = new ControlServer(type, receivePort, brAddr, sendPort, localAddr);
+            if (argIsControlServer) {
+                server = new ControlServer(argType, argReceivePort, argBrAddr, argSendPort, argLocalAddr);
             }
             else {
-                server = new SubordinateServer(type, receivePort, brAddr, sendPort, localAddr);
-                SubordinateServer sub = (SubordinateServer) server;
+                server = new SubordinateServer(argType, argReceivePort, argBrAddr, argSendPort, argLocalAddr);
 
-                while (server != null) {
-                    server.broadcastCommand("SYN");
-                    if (sub.isConnected()) break;
+                System.out.println("Connecting to Control Server...");
+                // Subordinate server spams SYN until SYN response is sent back
+                while (!((SubordinateServer) server).isConnected()) {
+                    server.broadcastCommand(Util.SYN);
                 }
+                System.out.println("Connected to Control Server at IP "
+                        + ((SubordinateServer) server).getControl().getIPAddr());
             }
         } catch (SocketException e) {
             e.printStackTrace();
@@ -36,24 +37,22 @@ public class ServerLauncher {
             e.printStackTrace();
         }
 
+        // Starting packet-listening thread
         Thread serverThread = new Thread(server);
         serverThread.start();
         // -------------------------------------------------------------------
-        if (isControlServer) {
+        if (argIsControlServer) {
+            // Control Server is listening for user input to parse it into commands for connected subordinates
             Scanner in = new Scanner(System.in);
             do{
                 System.out.println("Print next command. Send 'END' to terminate.");
                 String input = in.next();
-                server.broadcastCommand(input);
-                //client.broadcastCommand(input);
-                if(input.equals("END")) {
-                    System.out.println("Terminating launcher...");
-                    break;
-                }
+                ((ControlServer)server).parseUserInput(input);
+
             } while (in.hasNext());
             in.close();
         } else {
-
+            System.out.println("Listening to further commands...");
         }
     }
 }
