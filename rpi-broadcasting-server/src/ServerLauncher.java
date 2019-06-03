@@ -8,11 +8,12 @@ public class ServerLauncher {
 
         // Arguments
         int argType = Integer.parseInt(args[0]);
-        boolean argIsControlServer = (argType == 1)? true: false;
         int argReceivePort = Integer.parseInt(args[1]);
         int argSendPort = Integer.parseInt(args[2]);
         String argBrAddr = args[3];
         String argLocalAddr = args[4];
+
+        boolean argIsControlServer = argType == 1;
         // -------------------------------------------------------------------
         UDPServer server = null;
 

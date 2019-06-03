@@ -51,10 +51,10 @@ This is the format of the command being exchanged over the network between **Con
 
 ## Control server
 
-``` java -jar rpi-broadcasting-server.jar 1 <listening_port> <subordinate_listening_port> <broadcast_address> <localhost IPv4 address>```
+``` java -jar rpi-broadcasting-server.jar <type> <listening_port> <subordinate_listening_port> <broadcast_address> <localhost IPv4 address>```
 
 ## Subordinate server
 
 All subordinate servers must listen on the same port.
 
-``` java -jar rpi-broadcasting-server.jar 0 <listening_port> <control_server_listening_port> <broadcast_address> <localhost IPv4 address>```
+``` java -jar rpi-broadcasting-server.jar <type> <listening_port> <control_server_listening_port> <broadcast_address> <localhost IPv4 address>```
