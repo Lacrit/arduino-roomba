@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-/*
- * The UDP Server thread _RUNNING on our Raspberry Pi as 'the brain' of the Roomba trio which will be
- * controlled from the command line*/
 public class ControlServer extends UDPServer {
     protected Map<String, RemoteDevice> entriesByIP;
     protected Map<Integer, ArrayList<RemoteDevice>> entriesByType;
@@ -17,7 +14,6 @@ public class ControlServer extends UDPServer {
         entriesByType = new HashMap<>();
         commands.put(Util.SYN, p -> createNewEntry(p));
         commands.put(Util.DEL, p -> deleteEntry(p));
-
     }
 
     private void createNewEntry(String packet) {

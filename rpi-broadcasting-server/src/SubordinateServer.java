@@ -1,11 +1,6 @@
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-/*
-* The listening server on subordinate Roombas which will be listening to broadcasts for commands that should
-* be later sent over (possibly with python or C because of USB driver mismatch problems?) to the Arduino via
-* serial interface where the communication with Roomba will be handled
-* */
 public class SubordinateServer extends UDPServer{
 
     private boolean connected = false;
@@ -36,12 +31,12 @@ public class SubordinateServer extends UDPServer{
     private void synACKResponse(String p) {
         if(!connected) {
             if(control == null) {
-                control = new RemoteDevice(CURR_DEVICE_ID++, p.substring(Util.IP_AFTER_CMD1_IND),
+                control = new RemoteDevice(CURR_DEVICE_ID++, p.substring(Util.IP_AFTER_CMD2_IND),
                         Integer.parseInt(p.substring(Util.TYPE_IND,Util.CMD1_IND)));
                 connected = true;
                 System.out.println("Stored control server at IP " + control.getIPAddr());
             }
-            System.out.println("Control server is already stored.");
+            System.out.println("Control server is successfully stored.");
         }
         System.out.println("This subordinate server is already connected.");
     }
@@ -50,17 +45,8 @@ public class SubordinateServer extends UDPServer{
         return control;
     }
 
-//    private void shareAddress(String p){
-//            String destIP = p.substring(Util.IP_AFTER_CMD1_IND);
-//            System.out.println(Util.SYN + ": sharing my address with " + destIP);
-//            sendCommand(Util.SYN, destIP);
-//            controlIP = destIP;
-//
-//
-//    }
 
-
-    public boolean isConnected() {
+    public synchronized boolean isConnected() {
         return connected;
     }
 }

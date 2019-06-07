@@ -1,31 +1,30 @@
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Objects;
 
 public class RemoteDevice {
 
-    private final int ID;
-    private String IPAddr;
-    private Integer type;
+    private final int _ID;
+    private String _IPAddr;
+    private Integer _TYPE;
 
     private static int ALL_TYPES = 0;
     private static int CONTROL = 1;
     private static int CAMERA = 2;
     private static int NO_CAMERA = 3;
 
-    public RemoteDevice(int id, String IPAddr, int type) {
-        ID = id;
+    public RemoteDevice(int id, String _IPAddr, int _TYPE) {
+        _ID = id;
         //this.IPAddr = InetAddress.getByName(IPAddr);
-        this.IPAddr = IPAddr;
-        this.type = type;
+        this._IPAddr = _IPAddr;
+        this._TYPE = _TYPE;
 
     }
 
     @Override
     public String toString() {
         return "RemoteDevice{" +
-                "ID=" + ID +
-                ", IPAddr='" + IPAddr.toString() + '\'' +
+                "ID = " + _ID +
+                ", IP address = '" + _IPAddr + '\'' +
+                ", Type = " + _TYPE +
                 '}';
     }
 
@@ -44,10 +43,10 @@ public class RemoteDevice {
     }
 
     public int getID() {
-        return ID;
+        return _ID;
     }
 
     public String getIPAddr() {
-        return IPAddr;
+        return _IPAddr;
     }
 }

@@ -13,7 +13,7 @@ Used internally as the **sender_type** and used from terminal for **Control Serv
 * ``0 - Broadcast`` 
 * ``1 - Control server ("the brain")``  
 * ``2 - CameraRobot ``
-* ``3 - Maciek's team robot  ``
+* ``3 - The other robot  ``
 
 
 ## Command format (communication between user and Control server)
@@ -26,10 +26,10 @@ The format of the input command.
 
 This is the format of the command being exchanged over the network between **Control Server** and **Subordinate Servers**.
 
->``[sender_type] + [cmd] + ((cmd == ACK)? [cmd2]) + [sender_ip]``
+>``[sender_type] + [cmd] + ((cmd == ACK)? [cmd2]: empty) + [sender_ip]``
 >  
 > Please note that:  
->* **cmd** is always 3-character long   
+>* **cmd** and **cmd2** is always 3-character long   
 >* if **cmd** is ``ACK`` then **cmd2** is the command that was sent to the sender  
 
 ## Protocol 
@@ -46,6 +46,28 @@ This is the format of the command being exchanged over the network between **Con
 ### Subordinate server
 
 `ACKSYN` stores the IP of the sender as **Control Server**
+
+## Adding new command
+
+The commands are stored in `UDPServer`'s `commands` attribute. The responses to commands are stored in 
+`UDPServer`'s `ackResponses` attribute. Both are dictionaries mapping strings to function calls. 
+
+In order to add
+a new command one should first create a constant in `Util` (to prevent typos and simplify refactorings):
+> `public static String SYN = "SYN";`
+
+Then in the constructor of the `ControlServer` or `SubordinateServer` bind this string value to a function:
+> `commands.put(Util.SYN, p -> createNewEntry(p));`
+
+The method should take all data from the packet as a string parameter.
+In that method the string data from the packet is supposed to be parsed using predetermined format 
+(see Command format section). If the receiver should give `ACK` response back to the sender, 
+the sender should have a new entry in their `ackResponses` dictionary (analogous to `commands`):
+>  `ackResponses.put(Util.SYN, p -> synACKResponse(p));`
+
+### Control Server
+Control server has a client interface that enables the user to call Control Server's commands from the terminal in
+the same way the Subordinate Server does, for example, when spamming `SYN`. 
 
 # How to launch
 

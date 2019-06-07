@@ -20,17 +20,8 @@ public class ServerLauncher {
         try {
             if (argIsControlServer) {
                 server = new ControlServer(argType, argReceivePort, argBrAddr, argSendPort, argLocalAddr);
-            }
-            else {
+            } else {
                 server = new SubordinateServer(argType, argReceivePort, argBrAddr, argSendPort, argLocalAddr);
-
-                System.out.println("Connecting to Control Server...");
-                // Subordinate server spams SYN until SYN response is sent back
-                while (!((SubordinateServer) server).isConnected()) {
-                    server.broadcastCommand(Util.SYN);
-                }
-                System.out.println("Connected to Control Server at IP "
-                        + ((SubordinateServer) server).getControl().getIPAddr());
             }
         } catch (SocketException e) {
             e.printStackTrace();
@@ -45,14 +36,24 @@ public class ServerLauncher {
         if (argIsControlServer) {
             // Control Server is listening for user input to parse it into commands for connected subordinates
             Scanner in = new Scanner(System.in);
-            do{
+            do {
                 System.out.println("Print next command. Send 'END' to terminate.");
                 String input = in.next();
-                ((ControlServer)server).parseUserInput(input);
+                ((ControlServer) server).parseUserInput(input);
 
             } while (in.hasNext());
             in.close();
         } else {
+            System.out.println("Connecting to Control Server...");
+            // Subordinate server spams SYN until SYN response is sent back
+            int ctrl = 3;
+            while (!((SubordinateServer) server).isConnected()) {
+                server.broadcastCommand(Util.SYN);
+                ctrl--;
+                //if(ctrl == 0) break;
+            }
+            System.out.println("Connected to Control Server at IP "
+                    + ((SubordinateServer) server).getControl().getIPAddr());
             System.out.println("Listening to further commands...");
         }
     }
